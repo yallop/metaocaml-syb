@@ -21,4 +21,4 @@ depends: [
    "ocamlfind" {build}
    "oasis" {build}
 ]
-available: [ compiler = "4.02.0+modular-implicits" ]
+available: [ compiler = "4.02.1+modular-implicits-ber" ]
