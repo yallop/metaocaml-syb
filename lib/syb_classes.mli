@@ -17,22 +17,35 @@ val (=~~=) : {A:TYPEABLE} -> {B:TYPEABLE} -> (A.t, B.t) eql option
 
 module rec R :
 sig
-  type    genericT = {T: R.DATA} -> T.t -> T.t
-  type 'u genericQ = {T: R.DATA} -> T.t -> 'u
+  type    genericT  = {T: R.DATA} -> T.t      -> T.t
+  type    genericT_ = {T: R.DATA} -> T.t code -> T.t code
+  type 'u genericQ  = {T: R.DATA} -> T.t      -> 'u
+  type 'u genericQ_ = {T: R.DATA} -> T.t code -> 'u code
   module type DATA =
   sig
     type t
     module Typeable : TYPEABLE with type t = t
-    val gmapT : genericT -> t -> t
-    val gmapQ : 'u genericQ -> t -> 'u list
-    val constructor: t -> Syb_constructors.constructor
+    val gmapT  : genericT  -> t      -> t
+    val gmapT_ : genericT_ -> t code -> t code
+    val gmapQ  : 'u genericQ  -> t      -> 'u list
+    val gmapQ_ : 'u genericQ_ -> t code -> 'u list code
+    val constructor : t      -> Syb_constructors.constructor
+    val constructor_: t code -> Syb_constructors.constructor code
   end
 end
 include module type of R
 
-val gmapT : genericT -> genericT
-val gmapQ : 'u genericQ -> 'u list genericQ
-val constructor : Syb_constructors.constructor genericQ
+val gmapT  : genericT  -> genericT
+val gmapT_ : genericT_ -> genericT_
 
-val mkT : {T:TYPEABLE} -> (T.t -> T.t) -> genericT
-val mkQ : {T:TYPEABLE} -> 'u -> (T.t -> 'u) -> 'u genericQ
+val gmapQ  : 'u genericQ -> 'u list genericQ
+val gmapQ_ : 'u genericQ_ -> 'u list genericQ_
+
+val constructor  : Syb_constructors.constructor genericQ
+val constructor_ : Syb_constructors.constructor genericQ_
+
+val mkT  : {T:TYPEABLE} -> (T.t -> T.t) -> genericT
+val mkT_ : {T:TYPEABLE} -> (T.t code -> T.t code) -> genericT_
+
+val mkQ  : {T:TYPEABLE} -> 'u -> (T.t -> 'u) -> 'u genericQ
+val mkQ_ : {T:TYPEABLE} -> 'u code -> (T.t code -> 'u code) -> 'u genericQ_

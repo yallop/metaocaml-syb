@@ -60,45 +60,53 @@ struct
   let type_rep () = Option (A.type_rep ())
 end
 
-module Primitive(A:
-                 sig
-                   type t
-                   module Typeable : TYPEABLE with type t = t
-                   val constructor : t -> constructor
-                 end) : DATA with type t = A.t =
+implicit module Data_int =
 struct
-  include A
+  type t = int
+  module Typeable = Typeable_int
   let gmapT _ x = x
+  let gmapT_ _ x = x
   let gmapQ _ _ = []
+  let gmapQ_ _ _ = .<[]>.
+  let constructor x = Syb_constructors.constructor (string_of_int x)
+  let constructor_ x = .< Syb_constructors.constructor (string_of_int .~x) >.
 end
 
-implicit module Data_int =
-           Primitive (struct
-             type t = int
-             module Typeable = Typeable_int
-             let constructor c = Syb_constructors.constructor (string_of_int c)
-           end)
-
 implicit module Data_bool =
-           Primitive (struct
-             type t = bool
-             module Typeable = Typeable_bool
-             let constructor b = Syb_constructors.constructor (string_of_bool b)
-           end)
+struct
+  type t = bool
+  module Typeable = Typeable_bool
+  let gmapT _ x = x
+  let gmapT_ _ x = x
+  let gmapQ _ _ = []
+  let gmapQ_ _ _ = .<[]>.
+  let constructor x = Syb_constructors.constructor (string_of_bool x)
+  let constructor_ x = .< Syb_constructors.constructor (string_of_bool .~x) >.
+end
 
 implicit module Data_float =
-           Primitive (struct
-             type t = float
-             module Typeable = Typeable_float
-             let constructor f = Syb_constructors.constructor (string_of_float f)
-           end)
+struct
+  type t = float
+  module Typeable = Typeable_float
+  let gmapT _ x = x
+  let gmapT_ _ x = x
+  let gmapQ _ _ = []
+  let gmapQ_ _ _ = .<[]>.
+  let constructor x = Syb_constructors.constructor (string_of_float x)
+  let constructor_ x = .< Syb_constructors.constructor (string_of_float .~x) >.
+end
 
 implicit module Data_string =
-           Primitive (struct
-             type t = string
-             module Typeable = Typeable_string
-             let constructor s = Syb_constructors.constructor (Printf.sprintf "%S" s)
-           end)
+struct
+  type t = string
+  module Typeable = Typeable_string
+  let gmapT _ x = x
+  let gmapT_ _ x = x
+  let gmapQ _ _ = []
+  let gmapQ_ _ _ = .<[]>.
+  let constructor x = Syb_constructors.constructor (Printf.sprintf "%S" x)
+  let constructor_ x = .< Syb_constructors.constructor (Printf.sprintf "%S" .~x) >.
+end
 
 implicit module Data_list {A: DATA} : DATA with type t = A.t list =
 struct
@@ -111,14 +119,28 @@ struct
         [] -> []
       | x :: xs -> f x :: f {R} xs
 
+    let gmapT_ (f : genericT_) l =
+      .< match .~l with 
+          [] -> []
+        | x :: xs -> .~(f .<x>.) :: .~(f {R} .<xs>.) >.
+
     let gmapQ (q : _ genericQ) (l : t) =
       match l with
         [] -> []
       | x :: xs -> [q x; q {R} xs]
 
+    let gmapQ_  (q : _ genericQ_) l =
+      .< match .~l with                   
+        | [] -> []
+        | x :: xs -> [.~(q .<x>.); .~(q {R} .<xs>.)] >.
+
     let constructor = function
         [] -> Syb_constructors.constructor "[]"
       | _::_ -> Syb_constructors.constructor "::"
+
+    let constructor_ c = .< match .~c with
+       [] -> Syb_constructors.constructor "[]"
+      | _::_ -> Syb_constructors.constructor "::" >.
   end
   include R
 end
@@ -128,8 +150,14 @@ struct
   type t = A.t * B.t
   module Typeable = Typeable_pair(A.Typeable)(B.Typeable)
   let gmapT (f : genericT) ((x, y) : t) = (f x, f y)
+  let gmapT_ (f : genericT_) (p : (A.t * B.t) code) = 
+    .< let (x, y) = .~p in (.~(f .<x>.), .~(f .<y>.)) >.
   let gmapQ (q : _ genericQ) ((x, y) : t) = [q x; q y]
+  let gmapQ_ (q : _ genericQ_) (p : (A.t * B.t) code) =
+    .< let (x, y) = .~p in [.~(q .<x>.); .~(q .<y>.)] >.
   let constructor _ = "(,)"
+  let constructor_ _ = let c = constructor "(,)" in .< c >.
+
 end
 
 implicit module Data_option {A: DATA} : DATA with type t = A.t option =
@@ -138,11 +166,16 @@ struct
   module Typeable = Typeable_option(A.Typeable)
   let gmapT (f : genericT) (o : t) =
     match o with None -> None | Some x -> Some (f x)
+  let gmapT_ (f : genericT_) (o : A.t option code) = 
+    .< match .~o with None -> None | Some x -> Some .~(f .<x>.) >.
   let gmapQ (q : _ genericQ) (o : t) =
     match o with None -> [] | Some x -> [q x]
+  let gmapQ_ (q : _ genericQ_) (o : A.t option code) =
+    .< match .~o with None -> [] | Some x -> [.~(q .<x>.)] >.
   let constructor = function
       None -> "None"
     | Some _ -> "Some"
+  let constructor_ c = .< constructor .~c >.
 end
 
 implicit module Typeable_of_data{F: DATA} = F.Typeable
