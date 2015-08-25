@@ -12,8 +12,9 @@ Library syb
   Findlibname:      syb
   BuildTools:       ocamlbuild
   Modules:          Syb, Syb_classes, Syb_instances
-  InternalModules:  Syb_constructors, Syb_schemes
-  
+  InternalModules:  Syb_constructors, Syb_fixpoints, Syb_schemes
+  BuildDepends:     genlet
+
 Executable test_syb
   Path:             test
   MainIs:           test_syb.ml
