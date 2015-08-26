@@ -24,4 +24,4 @@ Executable test_syb
 
 Test test_syb
   Command:          $test_syb
-  WorkingDirectory: test  
+  WorkingDirectory: _build/lib
