@@ -20,7 +20,7 @@ Executable test_syb
   MainIs:           test_syb.ml
   Build$:           flag(tests)
   Install:          false
-  BuildDepends:     oUnit, syb
+  BuildDepends:     oUnit, syb, genlet
 
 Test test_syb
   Command:          $test_syb
