@@ -85,3 +85,11 @@ let mkQ : 'u. {T:TYPEABLE} -> 'u -> (T.t -> 'u) -> 'u genericQ =
 let mkQ_ : 'u. {T:TYPEABLE} -> 'u code -> (T.t code -> 'u code) -> 'u genericQ_ =
   fun {T:TYPEABLE} u g {D: DATA} x ->
     app'_ (module D.Typeable) (T.type_rep ()) u g x
+
+let instantiateT {D: DATA} (f : genericT_) =
+  Runcode.run (Gengenlet.let_locus @@ fun () ->
+               .< fun x -> .~(f .<x>.) >.)
+
+let instantiateQ {D: DATA} (q : 'u genericQ_) =
+  Runcode.run (Gengenlet.let_locus @@ fun () ->
+               .< fun x -> .~(q .<x>.) >.)

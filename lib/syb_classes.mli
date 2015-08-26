@@ -49,3 +49,7 @@ val mkT_ : {T:TYPEABLE} -> (T.t code -> T.t code) -> genericT_
 
 val mkQ  : {T:TYPEABLE} -> 'u -> (T.t -> 'u) -> 'u genericQ
 val mkQ_ : {T:TYPEABLE} -> 'u code -> (T.t code -> 'u code) -> 'u genericQ_
+
+val instantiateT : {D:DATA} -> genericT_ -> D.t -> D.t
+
+val instantiateQ : {D:DATA} -> 'u genericQ_ -> D.t -> 'u
