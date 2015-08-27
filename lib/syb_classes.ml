@@ -86,10 +86,12 @@ let mkQ_ : 'u. {T:TYPEABLE} -> 'u code -> (T.t code -> 'u code) -> 'u genericQ_ 
   fun {T:TYPEABLE} u g {D: DATA} x ->
     app'_ (module D.Typeable) (T.type_rep ()) u g x
 
-let instantiateT {D: DATA} (f : genericT_) =
-  Runcode.run (Gengenlet.let_locus @@ fun () ->
-               .< fun x -> .~(f .<x>.) >.)
+let generateT {D: DATA} (f : genericT_) =
+  Gengenlet.let_locus @@ fun () -> .< fun x -> .~(f .<x>.) >.
 
-let instantiateQ {D: DATA} (q : 'u genericQ_) =
-  Runcode.run (Gengenlet.let_locus @@ fun () ->
-               .< fun x -> .~(q .<x>.) >.)
+let generateQ {D: DATA} (q : 'u genericQ_) =
+  Gengenlet.let_locus @@ fun () -> .< fun x -> .~(q .<x>.) >.
+
+let instantiateT {D: DATA} f = Runcode.run (generateT f)
+
+let instantiateQ {D: DATA} q = Runcode.run (generateQ q)
