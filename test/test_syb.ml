@@ -5,7 +5,7 @@ open Syb_instances
 
 let test_gshow _ =
   assert_equal ~printer:(fun x -> x)
-    "(::((,)(true) (1)) (::((,)(false) (2)) (::((,)(false) (3)) ([]))))"
+    "((true, 1) :: ((false, 2) :: ((false, 3) :: [])))"
     (gshow
        [(true, 1);
         (false, 2);
@@ -13,7 +13,7 @@ let test_gshow _ =
 
 let test_gshow_ _ =
   assert_equal ~printer:(fun x -> x)
-    "(::((,)(true) (1)) (::((,)(false) (2)) (::((,)(false) (3)) ([]))))"
+    "((true, 1) :: ((false, 2) :: ((false, 3) :: [])))"
     (instantiateQ gshow_
        [(true, 1);
         (false, 2);

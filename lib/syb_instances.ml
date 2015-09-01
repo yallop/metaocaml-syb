@@ -136,11 +136,11 @@ struct
 
     let constructor = function
         [] -> Syb_constructors.constructor "[]"
-      | _::_ -> Syb_constructors.constructor "::"
+      | _::_ -> Syb_constructors.Cons
 
     let constructor_ c = .< match .~c with
        [] -> Syb_constructors.constructor "[]"
-      | _::_ -> Syb_constructors.constructor "::" >.
+      | _::_ -> Syb_constructors.Cons >.
   end
   include R
 end
@@ -155,8 +155,8 @@ struct
   let gmapQ (q : _ genericQ) ((x, y) : t) = [q x; q y]
   let gmapQ_ (q : _ genericQ_) (p : (A.t * B.t) code) =
     .< let (x, y) = .~p in [.~(q .<x>.); .~(q .<y>.)] >.
-  let constructor _ = "(,)"
-  let constructor_ _ = let c = constructor "(,)" in .< c >.
+  let constructor _ = Syb_constructors.Tuple 2
+  let constructor_ _ = .< Syb_constructors.Tuple 2 >.
 
 end
 
@@ -173,8 +173,8 @@ struct
   let gmapQ_ (q : _ genericQ_) (o : A.t option code) =
     .< match .~o with None -> [] | Some x -> [.~(q .<x>.)] >.
   let constructor = function
-      None -> "None"
-    | Some _ -> "Some"
+      None -> constructor "None"
+    | Some _ -> constructor "Some"
   let constructor_ c = .< constructor .~c >.
 end
 

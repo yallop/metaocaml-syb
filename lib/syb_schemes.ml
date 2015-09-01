@@ -158,12 +158,10 @@ let gfindtype_ {X:TYPEABLE} {D: DATA} x =
 
 (** Generic show *)
 let rec gshow {D:DATA} v =
-  "("^ string_of_constructor (constructor v)
-  ^ String.concat " " (gmapQ gshow v)
-  ^ ")"
+  string_of_applied_constructor (constructor v)
+    (gmapQ gshow v)
 
 let gshow_ = gfixQ_ (fun self {D:DATA} v ->
-  .< "("^ string_of_constructor .~(constructor_ v)
-     ^ String.concat " " .~(gmapQ_ self v)
-     ^ ")" >.)
+  .< string_of_applied_constructor .~(constructor_ v)
+                                   .~(gmapQ_ self v) >.)
 
