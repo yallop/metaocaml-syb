@@ -46,45 +46,53 @@ let gmapQ_ f {D: DATA} = D.gmapQ_ f
 let constructor {D: DATA} = D.constructor
 let constructor_ {D: DATA} = D.constructor_
 
-let app (type a) (type b) (module A : TYPEABLE with type t = a)
-    (b : b type_rep) (g : b -> b) (x : a) : a =
-    match A.eqty b with
+let app (type a) (type b)
+    (module A:TYPEABLE with type t = a)
+    (module B:TYPEABLE with type t = b)
+    (g : b -> b) (x : a) : a =
+  match (=~~=) {A} {B} with
+    Some Refl -> g x
+  | _ -> x
+
+let app_ (type a) (type b)
+    (module A : TYPEABLE with type t = a)
+    (module B : TYPEABLE with type t = b)
+    (g : b code -> b code) (x : a code) : a code =
+  match (=~~=) {A} {B} with
   | Some Refl -> g x
   | _         -> x
 
-let app_ (type a) (type b) (module A : TYPEABLE with type t = a)
-    (b : b type_rep) (g : b code -> b code) (x : a code) : a code =
-    match A.eqty b with
-  | Some Refl -> g x
-  | _         -> x
-
-let app' (type a) (type b) (type u) (module A : TYPEABLE with type t = a)
-    (b : b type_rep) (u:  u) (g : b -> u) (x: a) : u =
-    match A.eqty b with
+let app' (type a) (type b) (type u)
+    (module A : TYPEABLE with type t = a)
+    (module B : TYPEABLE with type t = b)
+    (u:  u) (g : b -> u) (x: a) : u =
+  match (=~~=) {A} {B} with
   | Some Refl -> g x
   | _         -> u
-
-let app'_ (type a) (type b) (type u) (module A : TYPEABLE with type t = a)
-    (b : b type_rep) (u:  u code) (g : b code -> u code) (x: a code) : u code =
-    match A.eqty b with
+    
+let app'_ (type a) (type b) (type u)
+    (module A : TYPEABLE with type t = a)
+    (module B : TYPEABLE with type t = b)
+    (u:  u code) (g : b code -> u code) (x: a code) : u code =
+  match (=~~=) {A} {B} with
   | Some Refl -> g x
   | _         -> u
-
+    
 let mkT : {T:TYPEABLE} -> (T.t -> T.t) -> genericT =
   fun {T:TYPEABLE} g {D: DATA} ->
-    app (module D.Typeable) (T.type_rep ()) g
+    app (module D.Typeable) (module T) g
 
 let mkT_ : {T:TYPEABLE} -> (T.t code -> T.t code) -> genericT_ =
   fun {T:TYPEABLE} g {D: DATA} ->
-    app_ (module D.Typeable) (T.type_rep ()) g
+    app_ (module D.Typeable) (module T) g
 
 let mkQ : 'u. {T:TYPEABLE} -> 'u -> (T.t -> 'u) -> 'u genericQ =
   fun {T:TYPEABLE} u g {D: DATA} x ->
-    app' (module D.Typeable) (T.type_rep ()) u g x
+    app' (module D.Typeable) (module T) u g x
 
 let mkQ_ : 'u. {T:TYPEABLE} -> 'u code -> (T.t code -> 'u code) -> 'u genericQ_ =
   fun {T:TYPEABLE} u g {D: DATA} x ->
-    app'_ (module D.Typeable) (T.type_rep ()) u g x
+    app'_ (module D.Typeable) (module T) u g x
 
 let generateT {D: DATA} (f : genericT_) =
   Gengenlet.let_locus @@ fun () -> .< fun x -> .~(f .<x>.) >.
