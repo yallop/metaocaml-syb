@@ -51,7 +51,10 @@ let rec everything : 'r. ('r -> 'r -> 'r) -> 'r genericQ -> 'r genericQ =
 
 let everything_ (@) (g : _ genericQ_) =
   gfixQ_ (fun self {X: DATA} x ->
-      let f = g x in .< List.fold_left (@) .~f .~(gmapQ_ self x) >.)
+      let f = g x in .<
+      let rec crush u = function
+        [] -> u | x :: xs -> crush (.~(.<u>. @ .<x>.)) xs
+      in crush .~f .~(gmapQ_ self x) >.)
 
 
 (** Variation of "everything" with an added stop condition *)
@@ -79,7 +82,7 @@ let listify {R:TYPEABLE} p =
   everything (@) (mkQ [] (fun x ->  if p x then [x] else []))
 
 let listify_ {R:TYPEABLE} p =
-  everything_ (@) (mkQ_ .<[]>. (fun x -> .< if .~(p x) then [.~x] else []>.))
+  everything_ (fun x y -> .<.~x @ .~y>.) (mkQ_ .<[]>. (fun x -> .< if .~(p x) then [.~x] else []>.))
 
 
 (** Look up a subterm by means of a maybe-typed filter *)
@@ -129,7 +132,7 @@ let gcount (p : bool genericQ) {T: DATA} x =
     x
 
 let gcount_ (p : bool genericQ_) {T: DATA} x =
-  everything_ (+)
+  everything_ (fun x y -> .<.~x + .~y>.)
     (fun {X: DATA} x -> .< if .~(p x) then 1 else 0 >.)
     x
 

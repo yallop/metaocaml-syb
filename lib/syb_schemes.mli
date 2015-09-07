@@ -19,8 +19,8 @@ val everywhereBut_ : bool genericQ_ -> genericT_ -> genericT_
 (* val somewhere : (MonadPlus m, Data a) => GenericM m -> a -> m a *)
 
 (** Summarise all nodes in top-down, left-to-right order *)
-val everything  : ('r -> 'r -> 'r) -> 'r genericQ  -> 'r genericQ
-val everything_ : ('r -> 'r -> 'r) -> 'r genericQ_ -> 'r genericQ_
+val everything  : ('r ->      'r ->      'r)      -> 'r genericQ  -> 'r genericQ
+val everything_ : ('r code -> 'r code -> 'r code) -> 'r genericQ_ -> 'r genericQ_
 
 (** Variation of "everything" with an added stop condition *)
 val everythingBut  : ('r -> 'r -> 'r) -> ('r * bool) genericQ  -> 'r genericQ

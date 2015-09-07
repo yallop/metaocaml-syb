@@ -91,7 +91,7 @@ let test_everything_ _ =
   let ints_gt_0 = mkQ_ .<[]>. (fun x -> .<if .~x > 0 then [.~x] else []>.) in
   assert_equal
     [1; 2; 3; 20]
-    ((instantiateQ (everything_ (@) ints_gt_0))
+    ((instantiateQ (everything_ (fun x y -> .< .~x @ .~y >.) ints_gt_0))
     [(false, 1);
      (true, 2);
      (true, 3);
