@@ -173,8 +173,8 @@ struct
   let gmapQ_ (q : _ genericQ_) (o : A.t option code) =
     .< match .~o with None -> [] | Some x -> [.~(q .<x>.)] >.
   let constructor = function
-      None -> constructor "None"
-    | Some _ -> constructor "Some"
+      None -> Syb_constructors.constructor "None"
+    | Some _ -> Syb_constructors.constructor "Some"
   let constructor_ c = .< constructor .~c >.
 end
 
