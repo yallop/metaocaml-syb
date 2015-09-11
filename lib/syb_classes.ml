@@ -78,21 +78,17 @@ let app'_ (type a) (type b) (type u)
   | Some Refl -> g x
   | _         -> u
     
-let mkT : {T:TYPEABLE} -> (T.t -> T.t) -> genericT =
-  fun {T:TYPEABLE} g {D: DATA} ->
-    app (module D.Typeable) (module T) g
+let mkT {T:TYPEABLE} g : genericT =
+  fun {D:DATA} -> app (module D.Typeable) (module T) g
 
-let mkT_ : {T:TYPEABLE} -> (T.t code -> T.t code) -> genericT_ =
-  fun {T:TYPEABLE} g {D: DATA} ->
-    app_ (module D.Typeable) (module T) g
+let mkT_  {T:TYPEABLE} g : genericT_ =
+  fun {D: DATA} -> app_ (module D.Typeable) (module T) g
 
-let mkQ : 'u. {T:TYPEABLE} -> 'u -> (T.t -> 'u) -> 'u genericQ =
-  fun {T:TYPEABLE} u g {D: DATA} x ->
-    app' (module D.Typeable) (module T) u g x
+let mkQ {T:TYPEABLE} u g : 'u genericQ =
+  fun {D: DATA} x -> app' (module D.Typeable) (module T) u g x
 
-let mkQ_ : 'u. {T:TYPEABLE} -> 'u code -> (T.t code -> 'u code) -> 'u genericQ_ =
-  fun {T:TYPEABLE} u g {D: DATA} x ->
-    app'_ (module D.Typeable) (module T) u g x
+let mkQ_ {T:TYPEABLE} u g : 'u genericQ_ =
+  fun {D: DATA} x -> app'_ (module D.Typeable) (module T) u g x
 
 let generateT {D: DATA} (f : genericT_) =
   Gengenlet.let_locus @@ fun () -> .< fun x -> .~(f .<x>.) >.
