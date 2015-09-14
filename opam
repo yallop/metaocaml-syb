@@ -20,5 +20,6 @@ depends: [
    "ounit" {build}
    "ocamlfind" {build}
    "oasis" {build}
+   "higher"
 ]
 available: [ compiler = "4.02.1+modular-implicits-ber" ]

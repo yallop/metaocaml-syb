@@ -1,3 +1,5 @@
+open Higher
+
 (* Equality *)
 type (_, _) eql = Refl : ('a, 'a) eql
 
@@ -21,6 +23,9 @@ sig
   type    genericT_ = {T: R.DATA} -> T.t code -> T.t code
   type 'u genericQ  = {T: R.DATA} -> T.t      -> 'u
   type 'u genericQ_ = {T: R.DATA} -> T.t code -> 'u code
+  type 'c genericFapp  =
+    < g: 'b. {T: R.DATA} -> (T.t -> 'b, 'c) app -> T.t -> ('b, 'c) app >
+  type 'c genericFunit = < u: 'g. 'g -> ('g, 'c) app >
   module type DATA =
   sig
     type t
@@ -29,6 +34,7 @@ sig
     val gmapT_ : genericT_ -> t code -> t code
     val gmapQ  : 'u genericQ  -> t      -> 'u list
     val gmapQ_ : 'u genericQ_ -> t code -> 'u list code
+    val gfoldl : 'c genericFapp -> 'c genericFunit -> t -> (t, 'c) app
     val constructor : t      -> Syb_constructors.constructor
     val constructor_: t code -> Syb_constructors.constructor code
   end
@@ -40,6 +46,9 @@ val gmapT_ : genericT_ -> genericT_
 
 val gmapQ  : 'u genericQ -> 'u list genericQ
 val gmapQ_ : 'u genericQ_ -> 'u list genericQ_
+
+val gfoldl : 'c genericFapp -> 'c genericFunit ->
+             {T: DATA} -> T.t -> (T.t, 'c) app
 
 val constructor  : Syb_constructors.constructor genericQ
 val constructor_ : Syb_constructors.constructor genericQ_

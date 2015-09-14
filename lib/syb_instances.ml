@@ -68,6 +68,7 @@ struct
   let gmapT_ _ x = x
   let gmapQ _ _ = []
   let gmapQ_ _ _ = .<[]>.
+  let gfoldl (g : _ genericFapp) (u : _ genericFunit) x = u#u x
   let constructor x = Syb_constructors.constructor (string_of_int x)
   let constructor_ x = .< Syb_constructors.constructor (string_of_int .~x) >.
 end
@@ -80,6 +81,7 @@ struct
   let gmapT_ _ x = x
   let gmapQ _ _ = []
   let gmapQ_ _ _ = .<[]>.
+  let gfoldl (g : _ genericFapp) (u : _ genericFunit) x = u#u x
   let constructor x = Syb_constructors.constructor (string_of_bool x)
   let constructor_ x = .< Syb_constructors.constructor (string_of_bool .~x) >.
 end
@@ -92,6 +94,7 @@ struct
   let gmapT_ _ x = x
   let gmapQ _ _ = []
   let gmapQ_ _ _ = .<[]>.
+  let gfoldl (g : _ genericFapp) (u : _ genericFunit) x = u#u x
   let constructor x = Syb_constructors.constructor (string_of_float x)
   let constructor_ x = .< Syb_constructors.constructor (string_of_float .~x) >.
 end
@@ -104,6 +107,7 @@ struct
   let gmapT_ _ x = x
   let gmapQ _ _ = []
   let gmapQ_ _ _ = .<[]>.
+  let gfoldl (g : _ genericFapp) (u : _ genericFunit) x = u#u x
   let constructor x = Syb_constructors.constructor (Printf.sprintf "%S" x)
   let constructor_ x = .< Syb_constructors.constructor (Printf.sprintf "%S" .~x) >.
 end
@@ -134,6 +138,11 @@ struct
         | [] -> []
         | x :: xs -> [.~(q .<x>.); .~(q {R} .<xs>.)] >.
 
+    let gfoldl (g : _ genericFapp) (u : _ genericFunit) l =
+      match l with
+        [] -> u#u l
+      | x :: xs -> g#g {R} (g#g (u#u (fun x xs -> x :: xs)) x) xs
+
     let constructor = function
         [] -> Syb_constructors.constructor "[]"
       | _::_ -> Syb_constructors.Cons
@@ -155,6 +164,8 @@ struct
   let gmapQ (q : _ genericQ) ((x, y) : t) = [q x; q y]
   let gmapQ_ (q : _ genericQ_) (p : (A.t * B.t) code) =
     .< let (x, y) = .~p in [.~(q .<x>.); .~(q .<y>.)] >.
+  let gfoldl (g : _ genericFapp) (u : _ genericFunit) (x, y) =
+    g#g {B} (g#g {A} (u#u (fun x y -> (x,y))) x) y
   let constructor _ = Syb_constructors.Tuple 2
   let constructor_ _ = .< Syb_constructors.Tuple 2 >.
 
@@ -172,6 +183,9 @@ struct
     match o with None -> [] | Some x -> [q x]
   let gmapQ_ (q : _ genericQ_) (o : A.t option code) =
     .< match .~o with None -> [] | Some x -> [.~(q .<x>.)] >.
+  let gfoldl (g : _ genericFapp) (u : _ genericFunit) = function
+      None -> u#u None
+    | Some x -> g#g {A} (u#u (fun x -> Some x)) x
   let constructor = function
       None -> Syb_constructors.constructor "None"
     | Some _ -> Syb_constructors.constructor "Some"

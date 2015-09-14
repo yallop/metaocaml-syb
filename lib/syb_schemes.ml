@@ -167,4 +167,3 @@ let rec gshow {D:DATA} v =
 let gshow_ = gfixQ_ (fun self {D:DATA} v ->
   .< string_of_applied_constructor .~(constructor_ v)
                                    .~(gmapQ_ self v) >.)
-
