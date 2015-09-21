@@ -43,7 +43,16 @@ sig
     val constructor_: t code -> Syb_constructors.constructor code
   end
 end
-include module type of R
+type    genericT  = R.genericT
+type    genericT_ = R.genericT_
+type 'u genericQ  = 'u R.genericQ
+type 'u genericQ_ = 'u R.genericQ_
+type 'c genericFapp  = 'c R.genericFapp
+type 'c genericFunit = 'c R.genericFunit
+type 'c genericFapp_  = 'c R.genericFapp_
+type 'c genericFunit_ = 'c R.genericFunit_
+                          
+module type DATA = R.DATA
 
 val gmapT  : genericT  -> genericT
 val gmapT_ : genericT_ -> genericT_
