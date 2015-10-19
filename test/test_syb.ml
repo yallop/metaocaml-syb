@@ -3,6 +3,7 @@ open Higher
 open Syb_classes
 open Syb_schemes
 open Syb_instances
+open Syb_fixpoints
 
 let test_gshow _ =
   assert_equal ~printer:(fun x -> x)
@@ -150,6 +151,38 @@ let test_gfoldl_gmap _ =
         (false, 2);
         (false, 3)])
 
+
+let test_gfoldl_gmap_ _ =
+  let module Definitions =
+  struct
+    module Id = Newtype1(struct type 'a t = 'a end)
+    (* gmapT_ in terms of gfoldl_ *)
+    let gmapT_ (f : genericT_) : genericT_ =
+      let f : _ genericFapp_  =
+        object 
+          method g: 'b. {T: R.DATA} -> (T.t -> 'b, 'c) app code -> T.t code -> ('b, 'c) app code
+            = fun {T: R.DATA} g x -> .< Id.inj (Id.prj .~g .~(f x)) >.
+        end
+      and u : _ genericFunit_ =
+        object
+          method u: 'g. 'g code -> ('g, 'c) app code
+            = fun g -> .< Id.inj .~g >.
+        end in
+      fun {D:DATA} (x: D.t code) -> .<Id.prj .~(D.gfoldl_ f u x) >.
+
+    let everywhere_ (f : genericT_) =
+      gfixT_ (fun self {X:DATA} x -> f (gmapT_ self x))
+  end
+  in
+  assert_equal
+    [(false, 1);
+     (true, 2);
+     (true, 3)]
+    ((instantiateT (Definitions.everywhere_ (mkT_ (fun x -> .<not .~x >.))))
+       [(true, 1);
+        (false, 2);
+        (false, 3)])
+
 let suite = "SYB tests" >:::
   ["gshow"
     >:: test_gshow;
@@ -189,6 +222,9 @@ let suite = "SYB tests" >:::
 
     "everywhere using gfoldl"
     >:: test_gfoldl_gmap;
+
+    "everywhere_ using gfoldl_"
+    >:: test_gfoldl_gmap_;
   ]
 
 

@@ -28,6 +28,9 @@ sig
   type 'c genericFapp =
     < g: 'b. {T: R.DATA} -> (T.t -> 'b, 'c) app -> T.t -> ('b, 'c) app >
   type 'c genericFunit = < u: 'g. 'g -> ('g, 'c) app >
+  type 'c genericFapp_  =
+    < g: 'b. {T: R.DATA} -> (T.t -> 'b, 'c) app code -> T.t code -> ('b, 'c) app code >
+  type 'c genericFunit_ = < u: 'g. 'g code -> ('g, 'c) app code >
   module type DATA =
   sig
     type t
@@ -37,6 +40,7 @@ sig
     val gmapQ  : 'u genericQ  -> t      -> 'u list
     val gmapQ_ : 'u genericQ_ -> t code -> 'u list code
     val gfoldl : 'c genericFapp -> 'c genericFunit -> t -> (t, 'c) app
+    val gfoldl_ : 'c genericFapp_ -> 'c genericFunit_ -> t code -> (t, 'c) app code
     val constructor : t      -> Syb_constructors.constructor
     val constructor_: t code -> Syb_constructors.constructor code
   end
@@ -50,6 +54,7 @@ let gmapQ f {D: DATA} = D.gmapQ f
 let gmapQ_ f {D: DATA} = D.gmapQ_ f
 
 let gfoldl f u {D: DATA} = D.gfoldl f u
+let gfoldl_ f u {D: DATA} = D.gfoldl_ f u
 
 let constructor {D: DATA} = D.constructor
 let constructor_ {D: DATA} = D.constructor_
