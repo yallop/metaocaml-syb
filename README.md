@@ -2,7 +2,7 @@ A port of the [Scrap Your Boilerplate][syb-haskell] library to [BER MetaOCaml][b
 
 Generic programming libraries like Scrap Your Boilerplate make it possible to express a variety of traversals succinctly.  However, the resulting code is often considerably slower (10-20x) than equivalent handwritten code.  This overhead is largely a result of various forms of abstraction and higher-order polymorphism, and can be eliminated by using MetaOCaml's staging facilities to instantiate generic functions to type-specialised code.
 
-The draft paper [Staging Generic Programming][staging-generic-programming] explains the design of this library in detail.
+The draft paper [Staging Generic Programming][staging-generic-programming] (to appear at [PEPM 2016](http://conf.researchr.org/track/pepm-2016/pepm-2016-main)) explains the design of this library in detail.
 
 ### Installation
 
